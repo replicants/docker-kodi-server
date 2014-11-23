@@ -1,29 +1,25 @@
 # docker-xbmc-server
 #
 # Setup: Clone repo then checkout appropriate version
-#   For Frodo:
-#     $ git checkout frodo
-#   For Gotham
-#     $ git checkout gotham
+#   For helix
+#     $ git checkout helix
 #   For Master (currently gotham)
 #     $ git checkout master
 #
 # Create your own Build:
-# 	$ docker build --rm=true -t $(whoami)/docker-xbmc-server .
+# 	$ docker build --rm=true -t $(whoami)/docker-kodi-server .
 #
 # Run your build:
 # There are two choices   
 #   - UPnP server and webserver in the background: (replace ip and xbmc data location)
-#	  $ docker run -d --net=host --privileged -v /directory/with/xbmcdata:/opt/kodi-server/share/kodi/portable_data $(whoami)/docker-xbmc-server
+#	  $ docker run -d --net=host -v /directory/with/kodidata:/opt/kodi-server/share/kodi/portable_data $(whoami)/docker-kodi-server
 #
-#   - Run only the libraryscan and quit: 
-#	  $ docker run -v /directory/with/xbmcdata:/opt/xbmc-server/portable_data --entrypoint=/opt/xbmc-server/xbmcVideoLibraryScan $(whoami)/docker-xbmc-server --no-test --nolirc -p
 #
-# See README.md.
-# Source: https://github.com/wernerb/docker-xbmc-server
+# Greatly inspire by the work of wernerb,
+# See https://github.com/wernerb/docker-xbmc-server
 
 from ubuntu:14.04
-maintainer Werner Buck "email@wernerbuck.nl"
+maintainer celedhrim "celed+git@ielf.org"
 
 # Set locale to UTF8
 RUN locale-gen --no-purge en_US.UTF-8
