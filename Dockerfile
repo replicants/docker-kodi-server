@@ -37,7 +37,7 @@ RUN apt-get update && \
 	apt-get -y install git openjdk-7-jre-headless supervisor
 
 # Download XBMC, pick version from github
-RUN git clone https://github.com/xbmc/xbmc.git -b 14.0rc1-Helix --depth=1
+RUN git clone https://github.com/xbmc/xbmc.git -b 14.0rc3-Helix --depth=1
 
 # Add patches and xbmc-server files
 ADD src/5071.patch xbmc/5071.patch
