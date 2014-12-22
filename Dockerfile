@@ -21,6 +21,9 @@
 from ubuntu:14.04
 maintainer celedhrim "celed+git@ielf.org"
 
+# Set Terminal to non interactive
+ENV DEBIAN_FRONTEND noninteractive
+
 # Set locale to UTF8
 RUN locale-gen --no-purge en_US.UTF-8
 RUN update-locale LANG=en_US.UTF-8
@@ -28,9 +31,6 @@ RUN dpkg-reconfigure locales
 ENV LANGUAGE en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
-
-# Set Terminal to non interactive
-RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
 # Install java, git wget and supervisor
 RUN apt-get update && \
