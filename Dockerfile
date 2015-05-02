@@ -44,10 +44,10 @@ ADD src/5071.patch xbmc/5071.patch
 ADD src/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Apply patches:
-#	fixrash.diff : Fixes crashing in UPnP 
-#	wsnipex-fix-ede443716d0f3e5174674ddad8c5678691143b1b.diff : Fixes shared library compilation on gotham 
+#	fixrash.diff : Fixes crashing in UPnP
+#	wsnipex-fix-ede443716d0f3e5174674ddad8c5678691143b1b.diff : Fixes shared library compilation on gotham
 RUN cd xbmc && \
- git apply 5071.patch 
+ git apply 5071.patch
 
 # Installs xbmc dependencies, configure, make, clean.
 # Taken out of the list of dependencies: libbluetooth3. Put in the list: libssh-4 libtag1c2a libcurl3-gnutls libnfs1
@@ -62,7 +62,7 @@ RUN apt-get install -y build-essential gawk pmount libtool nasm yasm automake cm
 		--disable-debug \
 		--disable-vdpau \
 		--disable-vaapi \
-		--disable-crystalhd \ 
+		--disable-crystalhd \
 		--disable-vdadecoder \
 		--disable-vtbdecoder \
 		--disable-openmax \
