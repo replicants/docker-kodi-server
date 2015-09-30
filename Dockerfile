@@ -3,16 +3,16 @@
 # Setup: Clone repo then checkout appropriate version
 #   For isengard
 #     $ git checkout isengard
-#   For Master (currently xbmc-git)
+#   For Master (Lastest Kodi stable release)
 #     $ git checkout master
 #
 # Create your own Build:
-# 	$ docker build --rm=true -t $(whoami)/docker-kodi-server .
+# 	$ docker build --rm=true -t $(whoami)/kodi-server .
 #
 # Run your build:
 # There are two choices
 #   - UPnP server and webserver in the background: (replace ip and xbmc data location)
-#	  $ docker run -d --net=host -v /directory/with/kodidata:/opt/kodi-server/share/kodi/portable_data $(whoami)/docker-kodi-server
+#	  $ docker run -d --net=host -v /directory/with/kodidata:/opt/kodi-server/share/kodi/portable_data $(whoami)/kodi-server
 #
 #
 # Greatly inspire by the work of wernerb,
@@ -37,7 +37,7 @@ RUN apt-get update && \
 	apt-get -y install git openjdk-7-jre-headless supervisor
 
 # Download XBMC, pick version from github
-RUN git clone https://github.com/xbmc/xbmc.git --depth=1
+RUN git clone https://github.com/xbmc/xbmc.git -b 15.1-Isengard --depth=1
 
 # Add patches and xbmc-server files
 ADD src/headless.patch xbmc/headless.patch
