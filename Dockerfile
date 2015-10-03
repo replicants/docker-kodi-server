@@ -37,7 +37,7 @@ RUN apt-get update && \
 	apt-get -y install git openjdk-7-jre-headless supervisor
 
 # Download XBMC, pick version from github
-RUN git clone https://github.com/xbmc/xbmc.git -b 16.0a2-Jarvis --depth=1
+RUN git clone https://github.com/xbmc/xbmc.git -b 16.0a3-Jarvis --depth=1
 
 # Add patches and xbmc-server files
 ADD src/headless.patch xbmc/headless.patch
@@ -56,6 +56,7 @@ RUN apt-get install -y build-essential gawk pmount libtool nasm yasm automake cm
 # configure, make and clean
 RUN	cd xbmc && \
     make -C tools/depends/target/crossguid PREFIX=/usr/local && \
+    make -C tools/depends/target/libdcadec PREFIX=/usr/local && \
 	./bootstrap && \
 	./configure \
 		--enable-nfs \
