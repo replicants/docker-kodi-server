@@ -35,7 +35,7 @@ Docker is used to compile and run the latest headless version of KODI on ubuntu 
   | `lastest` ( default) | isengard    | 15.2         | 14.04 (Trusty Tahr) |
   | `helix`              | helix       | 14.2         | 14.04 (Trusty Tahr) |
   | `isengard`           | isengard    | 15.2         | 14.04 (Trusty Tahr) |
-  | `jarvis`             | jarvis      | 16.0b4       | 14.04 (Trusty Tahr) |
+  | `jarvis`             | jarvis      | 16.0b5       | 14.04 (Trusty Tahr) |
 
 3. Run the image ( change the **/path/to/kodi-server-profile**)
 
