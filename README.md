@@ -1,45 +1,56 @@
-# docker-xbmc-server
+# docker-kodi-server
 
-This will allow you to serve files through the KODI UPnP Library to your UPnP client/players (such as kodi or Chromecast). 
+This will allow you to
+* serve files through the XBMC UPnP Library to your UPnP client/players (such as Xbmc or Chromecast).
+* Web access every time , or use with some tools like [htpc-manager](http://htpc.io/)
+* Trigger library scan When you want or from sickbeard/sickrage/couchpotato/...
 
-Docker is used to compile and run the latest headless version of KODI
+Docker is used to compile and run the latest headless version of KODI on ubuntu LTS
+
+
+
 
 ### Preqrequisites:
-* Docker version 0.12+ (Follow the [installation instructions](https://docs.docker.com/))
+* Docker (Follow the [installation instructions](https://docs.docker.com/))
 
 ### Quick start
 
-1. Clone this repository:
-        
-        $ git clone git@github.com:celedhrim/docker-xbmc-server.git -b helix
+1. Prepare a full kodi profile with the GUI version then take the ~/.kodi
 
-2. open `xbmcdata/userdata/advancedsettings.xml` and change the following information to reflect your installation:
+        $ cp -r ~/.kodi ~/kodi-server-profile
 
-        <videodatabase>
-                <type>mysql</type>
-                <host>192.168.1.50</host>
-                <port>3306</port>
-                <user>xbmc</user>
-                <pass>xbmc</pass>
-        </videodatabase>
-        <musicdatabase>
-                <type>mysql</type>
-                <host>192.168.1.50</host>
-                <port>3306</port>
-                <user>xbmc</user>
-                <pass>xbmc</pass>
-        </musicdatabase>
-        
-    The ip,port,user and password refers to your xbmc mysql database.
+2. Use prebuild docker image ([see here](https://hub.docker.com/r/celedhrim/kodi-server/))
 
-    Or simple prepare a profile with a desktop kodi version.
+  For the last stable version,
+
+        $ docker pull celedhrim/kodi-server
+
+  For a specific version,
+
+        $ docker pull celedhrim/kodi-server:branchname
+
+
+  | branchname           | Kodi branch | Kodi version | Ubuntu version      |
+  |----------------------|-------------|--------------|---------------------|
+  | `lastest` ( default) | isengard    | 15.2         | 14.04 (Trusty Tahr) |
+  | `helix`              | helix       | 14.2         | 14.04 (Trusty Tahr) |
+  | `isengard`           | isengard    | 15.2         | 14.04 (Trusty Tahr) |
+  | `jarvis`             | jarvis      | 16.0rc1      | 14.04 (Trusty Tahr) |
+
+3. Run the image ( change the **/path/to/kodi-server-profile**)
+
+        $ docker run -d --restart="always" --net=host -v /path/to/kodi-server-profile:/opt/kodi-server/share/kodi/portable_data celedhrim/kodi-server
+
+   or if use specific branch
+
+        $ docker run -d --restart="always" --net=host -v /path/to/kodi-server-profile:/opt/kodi-server/share/kodi/portable_data celedhrim/kodi-server:branchname
+
+
+
 
 ### Build the container yourself
-Replace gotham with master or frodo accordingly if necessary:
-    
-    $ git checkout helix
-    $ docker build --rm=true -t $(whoami)/docker-kodi-server .
+    $ git clone https://github.com/Celedhrim/docker-kodi-server.git
+    $ git checkout branchname
+    $ docker build --rm=true -t $(whoami)/kodi-server .
 
-### Launch it ! ###
-
-docker run -d --net=host -v /directory/with/kodidata:/opt/kodi-server/share/kodi/portable_data $(whoami)/docker-kodi-server
+Then proceed with the Quick start section.
