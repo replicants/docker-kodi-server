@@ -25,7 +25,7 @@ maintainer celedhrim "celed+git@ielf.org"
 ENV DEBIAN_FRONTEND noninteractive
 
 #For home dev speedup ( apt-cacher )
-#ENV http_proxy http://10.12.13.1:3142
+ENV http_proxy http://10.12.13.1:3142
 
 # Set locale to UTF8
 RUN locale-gen --no-purge en_US.UTF-8
@@ -40,7 +40,7 @@ RUN apt-get update && \
 	apt-get -y install git openjdk-7-jre-headless supervisor
 
 # Download XBMC, pick version from github
-RUN git clone https://github.com/xbmc/xbmc.git -b 16.0rc3-Jarvis --depth=1
+RUN git clone https://github.com/xbmc/xbmc.git -b 16.0-Jarvis --depth=1
 
 # Add patches and xbmc-server files
 ADD src/headless.patch xbmc/headless.patch
