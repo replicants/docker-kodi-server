@@ -24,6 +24,9 @@ maintainer celedhrim "celed+git@ielf.org"
 # Set Terminal to non interactive
 ENV DEBIAN_FRONTEND noninteractive
 
+#Add home for new docker compatibility
+ENV HOME=/root
+
 #For home dev speedup ( apt-cacher )
 #ENV http_proxy http://10.12.13.1:3142
 
