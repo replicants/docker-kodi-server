@@ -12,12 +12,19 @@ Docker is used to compile and run the latest headless version of KODI on ubuntu 
 
 ### Preqrequisites:
 * Docker (Follow the [installation instructions](https://docs.docker.com/))
+* A shared Library with mysql is higly recommended ( depending you needs)
 
 ### Quick start
 
-1. Prepare a full kodi profile with the GUI version then take the ~/.kodi
+1. Prepare a full kodi profile with the GUI version 
 
-        $ cp -r ~/.kodi ~/kodi-server-profile
+If you require web access, make sure to enable this, and set the port to 8089.
+Because 8080 is default for http proxy , the docker image expose 8089
+
+
+2. Make a copy of the ~/.kodi directory ( destination  doesn't matter , this is just an example)
+
+        $ cp -r ~./kodi ~/kodi-server-profile
 
 2. Use prebuild docker image ([see here](https://hub.docker.com/r/celedhrim/kodi-server/))
 
@@ -32,10 +39,10 @@ Docker is used to compile and run the latest headless version of KODI on ubuntu 
 
   | branchname           | Kodi branch | Kodi version | Ubuntu version      |
   |----------------------|-------------|--------------|---------------------|
-  | `lastest` ( default) | jarvis      | 16.0         | 16.04 (Xenial Xerus) |
+  | `lastest` ( default) | jarvis      | 16.1         | 16.04 (Xenial Xerus) |
   | `helix`              | helix       | 14.2         | 14.04 (Trusty Tahr) |
   | `isengard`           | isengard    | 15.2         | 14.04 (Trusty Tahr) |
-  | `jarvis`             | jarvis      | 16.0         | 16.04 (Xenial Xerus) |
+  | `jarvis`             | jarvis      | 16.1         | 16.04 (Xenial Xerus) |
   | `experimental`       | jarvis      | 16.0         | 16.04 (Xenial Xerus)|
 
 3. Run the image ( change the **/path/to/kodi-server-profile**)
