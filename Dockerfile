@@ -26,7 +26,7 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV HOME=/root
 
 #For home dev speedup ( apt-cacher )
-ENV http_proxy http://10.12.13.1:3142
+#ENV http_proxy http://10.12.13.1:3142
 
 # Set locale to UTF8
 RUN locale-gen --no-purge en_US.UTF-8
