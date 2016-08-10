@@ -5,7 +5,7 @@ This will allow you to
 * Web access every time , or use with some tools like [htpc-manager](http://htpc.io/)
 * Trigger library scan When you want or from sickbeard/sickrage/couchpotato/...
 
-Docker is used to compile and run the latest headless version of KODI on ubuntu LTS
+Docker is used to compile and run the latest headless version of KODI on ubuntu
 
 
 
@@ -39,11 +39,11 @@ Because 8080 is default for http proxy , the docker image expose 8089
 
   | branchname           | Kodi branch | Kodi version | Ubuntu version      |
   |----------------------|-------------|--------------|---------------------|
-  | `lastest` ( default) | jarvis      | 16.1         | 16.04 (Xenial Xerus) |
+  | `lastest` ( default) | jarvis      | 16.1         | 16.04 (Xenial Xerus)|
   | `helix`              | helix       | 14.2         | 14.04 (Trusty Tahr) |
   | `isengard`           | isengard    | 15.2         | 14.04 (Trusty Tahr) |
-  | `jarvis`             | jarvis      | 16.1         | 16.04 (Xenial Xerus) |
-  | `experimental`       | jarvis      | 16.0         | 16.04 (Xenial Xerus)|
+  | `jarvis`             | jarvis      | 16.1         | 16.04 (Xenial Xerus)|
+  | `experimental`       | krypton     | 17.0a3       | 16.10 (Yakkety Yak) |
 
 3. Run the image ( change the **/path/to/kodi-server-profile**)
 
