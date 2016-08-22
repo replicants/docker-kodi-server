@@ -45,7 +45,7 @@ RUN cd /root/ && \
 		apt-get update && \
 		apt-get -y dist-upgrade && \
 		apt-get -y install git make curl g++ uuid-dev autoconf pkg-config libtool autopoint swig openjdk-8-jre-headless libboost-dev python-dev libglew-dev libmysqlclient-dev libass-dev libmpeg2-4-dev libjpeg-dev libvorbis-dev libcurl4-gnutls-dev libbz2-dev libtiff-dev liblzo2-dev libssl-dev libtinyxml-dev libyajl-dev libxml2-dev libxslt1-dev libsqlite3-dev libpcre3-dev libtag1-dev libjasper-dev libmicrohttpd-dev libxrandr-dev libssh-dev libsmbclient-dev libnfs-dev libavcodec-dev libavfilter-dev libavformat-dev libavutil-dev libpostproc-dev libswscale-dev libswresample-dev gawk cmake gperf unzip zip libiso9660-dev iputils-ping libegl1-mesa-dev libegl1-mesa libavcodec57 libavfilter6 &&\
-		git clone https://github.com/xbmc/xbmc.git -b 17.0a3-Krypton --depth=1 && \
+		git clone https://github.com/xbmc/xbmc.git -b 17.0b1-Krypton --depth=1 && \
 		cd /root/xbmc && \
 		mv /headless.patch . && \
 		git apply headless.patch && \
