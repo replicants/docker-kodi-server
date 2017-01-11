@@ -5,7 +5,7 @@ This will allow you to
 * Web access every time , or use with some tools like [htpc-manager](http://htpc.io/)
 * Trigger library scan When you want or from sickbeard/sickrage/couchpotato/...
 
-Docker is used to compile and run the latest headless version of KODI on ubuntu
+Docker is used to compile and run the latest headless version of KODI on Archlinux
 
 
 
