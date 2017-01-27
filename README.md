@@ -43,7 +43,7 @@ Because 8080 is default for http proxy , the docker image expose 8089
   | `helix`              | helix       | 14.2         | 14.04 (Trusty Tahr) |
   | `isengard`           | isengard    | 15.2         | 14.04 (Trusty Tahr) |
   | `jarvis`             | jarvis      | 16.1         | 16.04 (Xenial Xerus)|
-  | `krypton`            | krypton     | 17.0rc2      | Archlinux           |
+  | `krypton`            | krypton     | 17.0rc4      | Archlinux           |
   | `experimental`       | krypton     | 17.0rc2      | Archlinux           |
 
 3. Run the image ( change the **/path/to/kodi-server-profile**)
