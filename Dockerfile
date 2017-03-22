@@ -24,9 +24,7 @@ ADD src/headless.patch /headless.patch
 
 # Install dep , compile , clean
 
-RUN curl -o /etc/pacman.d/mirrorlist "https://www.archlinux.org/mirrorlist/?country=all&protocol=https&ip_version=6&use_mirror_status=on" && \
-    sed -i 's/^#//' /etc/pacman.d/mirrorlist && \
-    cd /root && \
+RUN cd /root && \
 	pacman-key --populate && \
     pacman-key --refresh-keys && \
     pacman -Sy --noprogressbar --noconfirm && \
@@ -35,10 +33,10 @@ RUN curl -o /etc/pacman.d/mirrorlist "https://www.archlinux.org/mirrorlist/?coun
     pacman-db-upgrade && \
     pacman -Syy --noprogressbar --noconfirm archlinux-keyring && \
     pacman -Su --noprogressbar --noconfirm && \
-    pacman --noprogressbar --noconfirm -S git make autoconf automake pkg-config swig jre8-openjdk-headless gcc python2 mesa-libgl glu libmariadbclient libass tinyxml libcrossguid yajl libxslt taglib libmicrohttpd libxrandr libssh smbclient libnfs ffmpeg libx264 cmake gperf unzip zip libcdio gtk-update-icon-cache rsync && \
+    pacman --noprogressbar --noconfirm -S git make autoconf automake pkg-config swig jre8-openjdk-headless gcc python2 mesa-libgl glu libmariadbclient libass tinyxml libcrossguid yajl libxslt taglib libmicrohttpd libxrandr libssh smbclient libnfs ffmpeg libx264 cmake gperf unzip zip libcdio gtk-update-icon-cache rsync grep sed gettext which && \
 	ln -s /usr/bin/python2 /usr/bin/python && \
 	ln -s /usr/bin/python2-config /usr/bin/python-config && \
-	git clone https://github.com/xbmc/xbmc.git -b 17.0-Krypton --depth=1 && \
+	git clone https://github.com/xbmc/xbmc.git -b 17.1-Krypton --depth=1 && \
 	cd /root/xbmc && \
 	make -C tools/depends/native/JsonSchemaBuilder/ && \
 	cp tools/depends/native/JsonSchemaBuilder/bin/JsonSchemaBuilder /usr/local/bin && \
@@ -92,7 +90,7 @@ RUN curl -o /etc/pacman.d/mirrorlist "https://www.archlinux.org/mirrorlist/?coun
 	cd /root && \
 	mkdir empty && \
 	rsync -a --delete empty/ xbmc/ && \
-    pacman --noconfirm -Rnsc git make autoconf automake pkg-config swig jre8-openjdk-headless gcc cmake gperf rsync gtk-update-icon-cache && \
+    pacman --noconfirm -Rnsc git make autoconf automake pkg-config swig jre8-openjdk-headless gcc cmake gperf rsync gtk-update-icon-cache grep sed gettext which && \
     rm -rf /root/* /usr/lib/python2.7/test /usr/share/doc /usr/share/man /var/cache/pacman/pkg
 
 
