@@ -39,7 +39,7 @@ Because 8080 is default for http proxy , the docker image expose 8089
 
   | branchname           | Kodi branch | Kodi version | Ubuntu version      |
   |----------------------|-------------|--------------|---------------------|
-  | `lastest` ( default) | jarvis      | 17.1         | Archlinux           |
+  | `lastest` ( default) | krypton     | 17.2         | Archlinux           |
   | `helix`              | helix       | 14.2         | 14.04 (Trusty Tahr) |
   | `isengard`           | isengard    | 15.2         | 14.04 (Trusty Tahr) |
   | `jarvis`             | jarvis      | 16.1         | 16.04 (Xenial Xerus)|
