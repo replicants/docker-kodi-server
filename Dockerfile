@@ -36,7 +36,7 @@ RUN cd /root && \
     pacman --noprogressbar --noconfirm -S git make autoconf automake pkg-config swig jre8-openjdk-headless gcc python2 mesa-libgl glu libmariadbclient libass tinyxml libcrossguid yajl libxslt taglib libmicrohttpd libxrandr libssh smbclient libnfs ffmpeg libx264 cmake gperf unzip zip libcdio gtk-update-icon-cache rsync grep sed gettext which && \
 	ln -s /usr/bin/python2 /usr/bin/python && \
 	ln -s /usr/bin/python2-config /usr/bin/python-config && \
-	git clone https://github.com/xbmc/xbmc.git -b 17.3-Krypton --depth=1 && \
+	git clone https://github.com/xbmc/xbmc.git -b 17.4-Krypton --depth=1 && \
 	cd /root/xbmc && \
 	make -C tools/depends/native/JsonSchemaBuilder/ && \
 	cp tools/depends/native/JsonSchemaBuilder/bin/JsonSchemaBuilder /usr/local/bin && \
