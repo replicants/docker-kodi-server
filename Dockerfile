@@ -26,21 +26,41 @@ ADD src/headless.patch /headless.patch
 
 RUN cd /root && \
     pacman -Syu --noprogressbar --noconfirm && \
-    pacman --noprogressbar --noconfirm -S git make autoconf automake pkg-config swig jre8-openjdk-headless gcc python2 mesa-libgl glu libmariadbclient libass tinyxml yajl libxslt taglib libmicrohttpd libxrandr libssh smbclient libnfs ffmpeg libx264 cmake gperf unzip zip libcdio gtk-update-icon-cache rsync grep sed gettext which patch && \
+    pacman --noprogressbar --noconfirm -S git make autoconf automake pkg-config swig gcc python2 mesa-libgl glu libmariadbclient libass tinyxml yajl libxslt taglib libmicrohttpd libxrandr libssh smbclient libnfs ffmpeg libx264 cmake gperf unzip zip libcdio gtk-update-icon-cache rsync grep sed gettext which patch && \
 	ln -s /usr/bin/python2 /usr/bin/python && \
 	ln -s /usr/bin/python2-config /usr/bin/python-config && \
 	git clone https://github.com/xbmc/xbmc.git -b 18.0a1-Leia --depth=1 && \
 	cd /root/xbmc && \
 	mv /headless.patch . && \
 	git apply headless.patch && \
-    cmake -DCMAKE_INSTALL_PREFIX=/opt/kodi-server -DENABLE_INTERNAL_FFMPEG=OFF -DWITH_FFMPEG=ON -DENABLE_AIRTUNES=OFF -DENABLE_LIRC=OFF -DENABLE_EVENTCLIENTS=OFF -DENABLE_INTERNAL_CROSSGUID=ON -DENABLE_INTERNAL_RapidJSON=ON -DENABLE_INTERNAL_FMT=ON -DENABLE_DVDCSS=OFF -DENABLE_ALSA=OFF -DENABLE_AVAHI=OFF -DENABLE_VDPAU=OFF -DENABLE_VAAPI=OFF -DENABLE_UDEV=OFF -DENABLE_PULSEAUDIO=OFF -DENABLE_DBUS=OFF && \
+    cmake \
+        -DCMAKE_INSTALL_PREFIX=/opt/kodi-server \
+        -DENABLE_INTERNAL_FFMPEG=OFF \
+        -DWITH_FFMPEG=ON \
+        -DENABLE_AIRTUNES=OFF \
+        -DENABLE_LIRC=OFF \
+        -DENABLE_EVENTCLIENTS=OFF \
+        -DENABLE_INTERNAL_CROSSGUID=ON \
+        -DENABLE_INTERNAL_RapidJSON=ON \
+        -DENABLE_INTERNAL_FMT=ON \
+        -DENABLE_DVDCSS=OFF \
+        -DENABLE_ALSA=OFF \
+        -DENABLE_AVAHI=OFF \
+        -DENABLE_VDPAU=OFF \
+        -DENABLE_VAAPI=OFF \
+        -DENABLE_UDEV=OFF \
+        -DENABLE_PULSEAUDIO=OFF \
+        -DENABLE_OPTICAL=OFF \
+        -DENABLE_SNDIO=OFF \
+        -DENABLE_LCMS2=OFF \
+        -DENABLE_DBUS=OFF && \
     make && \
     make install && \
 	mkdir -p /opt/kodi-server/share/kodi/portable_data/ && \
 	cd /root && \
 	mkdir empty && \
 	rsync -a --delete empty/ xbmc/ && \
-    pacman --noconfirm -Rnsc git make autoconf automake pkg-config swig jre8-openjdk-headless gcc cmake gperf rsync gtk-update-icon-cache grep gettext which patch && \
+    pacman --noconfirm -Rnsc git make autoconf automake pkg-config swig gcc cmake gperf rsync gtk-update-icon-cache grep gettext which patch && \
     rm -rf /root/* /usr/lib/python2.7/test /usr/share/doc /usr/share/man /var/cache/pacman/pkg
 
 
