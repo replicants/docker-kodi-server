@@ -1,11 +1,11 @@
-commit d09e0b42529c5739c9fd0ce732f9cdbf6fbf72cb
-Author: Celedhrim <celed+gitlab@ielf.org>
-Date:   Mon Jan 9 15:11:56 2017 +0100
+commit b8400e1f9582bc14296aad98d5a5cefbb0a6d1db
+Author: sylvain Gaspaillard <sylvain.gaspaillard@fr.clara.net>
+Date:   Mon Mar 5 11:45:48 2018 +0100
 
-    Headless patch
+    Headless patch Leia
 
 diff --git a/xbmc/AppParamParser.cpp b/xbmc/AppParamParser.cpp
-index 6f3c08e..5b71bf0 100644
+index 31f671f7b3..406283eed4 100644
 --- a/xbmc/AppParamParser.cpp
 +++ b/xbmc/AppParamParser.cpp
 @@ -137,6 +137,8 @@ void CAppParamParser::ParseArg(const std::string &arg)
@@ -18,10 +18,10 @@ index 6f3c08e..5b71bf0 100644
    {
      if (m_testmode)
 diff --git a/xbmc/Application.cpp b/xbmc/Application.cpp
-index 620366e..06e369e 100644
+index 8fe1ed5da5..72646efaf7 100644
 --- a/xbmc/Application.cpp
 +++ b/xbmc/Application.cpp
-@@ -278,6 +278,7 @@ CApplication::CApplication(void)
+@@ -258,6 +258,7 @@ CApplication::CApplication(void)
    , m_lastRenderTime(0)
    , m_skipGuiRender(false)
    , m_bStandalone(false)
@@ -29,38 +29,28 @@ index 620366e..06e369e 100644
    , m_bEnableLegacyRes(false)
    , m_bTestMode(false)
    , m_bSystemScreenSaverEnable(false)
-@@ -4308,15 +4309,18 @@ bool CApplication::OnMessage(CGUIMessage& message)
+@@ -4004,10 +4005,13 @@ bool CApplication::OnMessage(CGUIMessage& message)
  
-       if (!m_pPlayer->IsPlayingVideo())
+       if (!m_appPlayer.IsPlayingVideo())
        {
--        if(g_windowManager.GetActiveWindow() == WINDOW_FULLSCREEN_VIDEO)
+-        if(g_windowManager.GetActiveWindow() == WINDOW_FULLSCREEN_VIDEO ||
+-           g_windowManager.GetActiveWindow() == WINDOW_FULLSCREEN_GAME)
 +        if (!IsHeadless())
          {
 -          g_windowManager.PreviousWindow();
--        }
--        else
--        {
--          CSingleLock lock(g_graphicsContext);
--          //  resets to res_desktop or look&feel resolution (including refreshrate)
--          g_graphicsContext.SetFullScreenVideo(false);
-+          if(g_windowManager.GetActiveWindow() == WINDOW_FULLSCREEN_VIDEO)
-+            {
-+              g_windowManager.PreviousWindow();
-+            }
-+            else
-+            {
-+              CSingleLock lock(g_graphicsContext);
-+              //  resets to res_desktop or look&feel resolution (including refreshrate)
-+              g_graphicsContext.SetFullScreenVideo(false);
-+            }
++          if(g_windowManager.GetActiveWindow() == WINDOW_FULLSCREEN_VIDEO ||
++             g_windowManager.GetActiveWindow() == WINDOW_FULLSCREEN_GAME)
++          {
++            g_windowManager.PreviousWindow();
++          }
          }
-       }
- 
+         else
+         {
 diff --git a/xbmc/Application.h b/xbmc/Application.h
-index 580fdce..803b115 100644
+index b628f3071c..418982cda3 100644
 --- a/xbmc/Application.h
 +++ b/xbmc/Application.h
-@@ -342,6 +342,16 @@ public:
+@@ -321,6 +321,16 @@ public:
      return m_bStandalone;
    }
  
@@ -77,7 +67,7 @@ index 580fdce..803b115 100644
    void SetEnableLegacyRes(bool value)
    {
      m_bEnableLegacyRes = value;
-@@ -479,6 +489,7 @@ protected:
+@@ -457,6 +467,7 @@ protected:
    bool m_skipGuiRender;
  
    bool m_bStandalone;
@@ -86,10 +76,10 @@ index 580fdce..803b115 100644
    bool m_bTestMode;
    bool m_bSystemScreenSaverEnable;
 diff --git a/xbmc/guilib/GUIDialog.cpp b/xbmc/guilib/GUIDialog.cpp
-index 24ffe85..0b99db3 100644
+index 8903606b58..74ecd87ab9 100644
 --- a/xbmc/guilib/GUIDialog.cpp
 +++ b/xbmc/guilib/GUIDialog.cpp
-@@ -169,7 +169,8 @@ void CGUIDialog::Open_Internal(bool bProcessRenderLoop, const std::string &param
+@@ -183,7 +183,8 @@ void CGUIDialog::Open_Internal(bool bProcessRenderLoop, const std::string &param
    CSingleLock lock(g_graphicsContext);
  
    if (!g_windowManager.Initialized() ||
@@ -100,11 +90,11 @@ index 24ffe85..0b99db3 100644
  
    // set running before it's added to the window manager, else the auto-show code
 diff --git a/xbmc/platform/xbmc.cpp b/xbmc/platform/xbmc.cpp
-index 34e5ea6..ab38e90 100644
+index d2404a058f..3464ec6d84 100644
 --- a/xbmc/platform/xbmc.cpp
 +++ b/xbmc/platform/xbmc.cpp
-@@ -61,7 +61,7 @@ extern "C" int XBMC_Run(bool renderGUI, CFileItemList &playlist)
-   g_RBP.LogFirmwareVerison();
+@@ -62,7 +62,7 @@ extern "C" int XBMC_Run(bool renderGUI, const CAppParamParser &params)
+   CXBMCApp::get()->Initialize();
  #endif
  
 -  if (renderGUI && !g_application.CreateGUI())
@@ -113,16 +103,16 @@ index 34e5ea6..ab38e90 100644
      CMessagePrinter::DisplayError("ERROR: Unable to create GUI. Exiting");
      return status;
 diff --git a/xbmc/settings/SettingConditions.cpp b/xbmc/settings/SettingConditions.cpp
-index 6b1f2b6..e111490 100644
+index e6623fec7f..5c70f5f558 100644
 --- a/xbmc/settings/SettingConditions.cpp
 +++ b/xbmc/settings/SettingConditions.cpp
-@@ -338,6 +338,9 @@ void CSettingConditions::Initialize()
+@@ -349,6 +349,9 @@ void CSettingConditions::Initialize(const CProfilesManager &profileManager)
      m_simpleConditions.insert("isstandalone");
  #endif
  
-+  if (g_application.IsHeadless())
-+    m_simpleConditions.insert("is_headless");
++if (g_application.IsHeadless())
++  m_simpleConditions.insert("is_headless");
 +
-   if(CAEFactory::SupportsQualitySetting())
-     m_simpleConditions.insert("has_ae_quality_levels");
+   m_simpleConditions.insert("has_ae_quality_levels");
  
+ #ifdef HAS_WEB_SERVER

@@ -44,6 +44,7 @@ Because 8080 is default for http proxy , the docker image expose 8089
   | `isengard`           | isengard    | 15.2         | 14.04 (Trusty Tahr) |
   | `jarvis`             | jarvis      | 16.1         | 16.04 (Xenial Xerus)|
   | `krypton`            | krypton     | 17.6         | Archlinux           |
+  | `Leia`               | leia        | 18.0a1       | Archlinux           |
   | `experimental`       | krypton     | 17.0rc2      | Archlinux           |
 
 3. Run the image ( change the **/path/to/kodi-server-profile**)
@@ -59,6 +60,7 @@ Because 8080 is default for http proxy , the docker image expose 8089
 
 ### Build the container yourself
     $ git clone https://github.com/Celedhrim/docker-kodi-server.git
+    $ cd docker-kodi-server
     $ git checkout branchname
     $ docker build --rm=true -t $(whoami)/kodi-server .
 

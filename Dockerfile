@@ -26,65 +26,21 @@ ADD src/headless.patch /headless.patch
 
 RUN cd /root && \
     pacman -Syu --noprogressbar --noconfirm && \
-    pacman --noprogressbar --noconfirm -S git make autoconf automake pkg-config swig jre8-openjdk-headless gcc python2 mesa-libgl glu libmariadbclient libass tinyxml yajl libxslt taglib libmicrohttpd libxrandr libssh smbclient libnfs ffmpeg libx264 cmake gperf unzip zip libcdio gtk-update-icon-cache rsync grep sed gettext which && \
+    pacman --noprogressbar --noconfirm -S git make autoconf automake pkg-config swig jre8-openjdk-headless gcc python2 mesa-libgl glu libmariadbclient libass tinyxml yajl libxslt taglib libmicrohttpd libxrandr libssh smbclient libnfs ffmpeg libx264 cmake gperf unzip zip libcdio gtk-update-icon-cache rsync grep sed gettext which patch && \
 	ln -s /usr/bin/python2 /usr/bin/python && \
 	ln -s /usr/bin/python2-config /usr/bin/python-config && \
-	git clone https://github.com/xbmc/xbmc.git -b 17.6-Krypton --depth=1 && \
+	git clone https://github.com/xbmc/xbmc.git -b 18.0a1-Leia --depth=1 && \
 	cd /root/xbmc && \
-    make -C tools/depends/target/crossguid PREFIX=/usr/local && \
-	make -C tools/depends/native/JsonSchemaBuilder/ && \
-	cp tools/depends/native/JsonSchemaBuilder/bin/JsonSchemaBuilder /usr/local/bin && \
-	chmod 775 /usr/local/bin/JsonSchemaBuilder && \
 	mv /headless.patch . && \
 	git apply headless.patch && \
-	./bootstrap && \
-	./configure \
-		--enable-nfs \
-		--enable-upnp \
-		--enable-ssh \
-        --with-ffmpeg=shared \
-		--disable-libbluray \
-		--disable-debug \
-		--disable-vdpau \
-		--disable-vaapi \
-		--disable-crystalhd \
-		--disable-vdadecoder \
-		--disable-vtbdecoder \
-		--disable-openmax \
-		--disable-joystick \
-		--disable-rsxs \
-		--disable-projectm \
-		--disable-rtmp \
-		--disable-airplay \
-		--disable-airtunes \
-		--disable-dvdcss \
-		--disable-optical-drive \
-		--disable-libusb \
-		--disable-libcec \
-		--disable-libmp3lame \
-		--disable-libcap \
-		--disable-udev \
-		--disable-libvorbisenc \
-		--disable-asap-codec \
-		--disable-afpclient \
-		--disable-goom \
-		--disable-fishbmc \
-		--disable-spectrum \
-		--disable-waveform \
-		--disable-avahi \
-		--disable-texturepacker \
-		--disable-pulse \
-		--disable-dbus \
-		--disable-alsa \
-		--disable-hal \
-		--prefix=/opt/kodi-server && \
-	make && \
-	make install && \
+    cmake -DCMAKE_INSTALL_PREFIX=/opt/kodi-server -DENABLE_INTERNAL_FFMPEG=OFF -DWITH_FFMPEG=ON -DENABLE_AIRTUNES=OFF -DENABLE_LIRC=OFF -DENABLE_EVENTCLIENTS=OFF -DENABLE_INTERNAL_CROSSGUID=ON -DENABLE_INTERNAL_RapidJSON=ON -DENABLE_INTERNAL_FMT=ON -DENABLE_DVDCSS=OFF -DENABLE_ALSA=OFF -DENABLE_AVAHI=OFF -DENABLE_VDPAU=OFF -DENABLE_VAAPI=OFF -DENABLE_UDEV=OFF -DENABLE_PULSEAUDIO=OFF -DENABLE_DBUS=OFF && \
+    make && \
+    make install && \
 	mkdir -p /opt/kodi-server/share/kodi/portable_data/ && \
 	cd /root && \
 	mkdir empty && \
 	rsync -a --delete empty/ xbmc/ && \
-    pacman --noconfirm -Rnsc git make autoconf automake pkg-config swig jre8-openjdk-headless gcc cmake gperf rsync gtk-update-icon-cache grep sed gettext which && \
+    pacman --noconfirm -Rnsc git make autoconf automake pkg-config swig jre8-openjdk-headless gcc cmake gperf rsync gtk-update-icon-cache grep gettext which patch && \
     rm -rf /root/* /usr/lib/python2.7/test /usr/share/doc /usr/share/man /var/cache/pacman/pkg
 
 
