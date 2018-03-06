@@ -66,4 +66,4 @@ RUN cd /root && \
 
 #Eventserver and webserver respectively.
 EXPOSE 9777/udp 8089/tcp
-CMD ["/opt/kodi-server/lib/kodi/kodi.bin","--headless","--no-test","--nolirc","-p"]
+CMD ["/opt/kodi-server/lib64/kodi/kodi-x11","--headless","--no-test","--nolirc","-p"]
