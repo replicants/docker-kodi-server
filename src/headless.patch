@@ -1,9 +1,3 @@
-commit b8400e1f9582bc14296aad98d5a5cefbb0a6d1db
-Author: sylvain Gaspaillard <sylvain.gaspaillard@fr.clara.net>
-Date:   Mon Mar 5 11:45:48 2018 +0100
-
-    Headless patch Leia
-
 diff --git a/xbmc/AppParamParser.cpp b/xbmc/AppParamParser.cpp
 index 31f671f7b3..406283eed4 100644
 --- a/xbmc/AppParamParser.cpp
@@ -18,7 +12,7 @@ index 31f671f7b3..406283eed4 100644
    {
      if (m_testmode)
 diff --git a/xbmc/Application.cpp b/xbmc/Application.cpp
-index 8fe1ed5da5..72646efaf7 100644
+index 8fe1ed5da5..256bfc1fc8 100644
 --- a/xbmc/Application.cpp
 +++ b/xbmc/Application.cpp
 @@ -258,6 +258,7 @@ CApplication::CApplication(void)
@@ -29,7 +23,89 @@ index 8fe1ed5da5..72646efaf7 100644
    , m_bEnableLegacyRes(false)
    , m_bTestMode(false)
    , m_bSystemScreenSaverEnable(false)
-@@ -4004,10 +4005,13 @@ bool CApplication::OnMessage(CGUIMessage& message)
+@@ -605,7 +606,7 @@ bool CApplication::Create(const CAppParamParser &params)
+     return false;
+   }
+   // start the AudioEngine
+-  if(!m_ServiceManager->StartAudioEngine())
++  if(!IsHeadless() && !m_ServiceManager->StartAudioEngine())
+   {
+     CLog::Log(LOGFATAL, "CApplication::Create: Failed to start the AudioEngine");
+     return false;
+@@ -707,7 +708,8 @@ bool CApplication::CreateGUI()
+   if (sav_res)
+     CDisplaySettings::GetInstance().SetCurrentResolution(RES_DESKTOP, true);
+ 
+-  CServiceBroker::GetRenderSystem().ShowSplash("");
++  if (!IsHeadless())
++    CServiceBroker::GetRenderSystem().ShowSplash("");
+ 
+   // The key mappings may already have been loaded by a peripheral
+   CLog::Log(LOGINFO, "load keymapping");
+@@ -1054,7 +1056,7 @@ bool CApplication::Initialize()
+   int iDots = 1;
+   while (!event.WaitMSec(1000))
+   {
+-    if (databaseManager.IsUpgrading())
++    if (databaseManager.IsUpgrading() && !IsHeadless())
+       CServiceBroker::GetRenderSystem().ShowSplash(std::string(iDots, ' ') + localizedStr + std::string(iDots, '.'));
+ 
+     if (iDots == 3)
+@@ -1062,7 +1064,8 @@ bool CApplication::Initialize()
+     else
+       ++iDots;
+   }
+-  CServiceBroker::GetRenderSystem().ShowSplash("");
++  if (!IsHeadless())
++    CServiceBroker::GetRenderSystem().ShowSplash("");
+ 
+   StartServices();
+ 
+@@ -1090,14 +1093,15 @@ bool CApplication::Initialize()
+     iDots = 1;
+     while (!event.WaitMSec(1000))
+     {
+-      if (isMigratingAddons)
++      if (isMigratingAddons && !IsHeadless())
+         CServiceBroker::GetRenderSystem().ShowSplash(std::string(iDots, ' ') + localizedStr + std::string(iDots, '.'));
+       if (iDots == 3)
+         iDots = 1;
+       else
+         ++iDots;
+     }
+-    CServiceBroker::GetRenderSystem().ShowSplash("");
++    if (!IsHeadless())
++      CServiceBroker::GetRenderSystem().ShowSplash("");
+     m_incompatibleAddons = incompatibleAddons;
+     m_confirmSkinChange = true;
+ 
+@@ -1823,7 +1827,7 @@ bool CApplication::LoadCustomWindows()
+ void CApplication::Render()
+ {
+   // do not render if we are stopped or in background
+-  if (m_bStop)
++  if (m_bStop || IsHeadless())
+     return;
+ 
+   bool hasRendered = false;
+@@ -2714,10 +2718,12 @@ bool CApplication::Cleanup()
+     m_globalScreensaverInhibitor.Release();
+     m_screensaverInhibitor.Release();
+ 
+-    CServiceBroker::GetRenderSystem().DestroyRenderSystem();
+-    CServiceBroker::GetWinSystem().DestroyWindow();
+-    CServiceBroker::GetWinSystem().DestroyWindowSystem();
+-    g_windowManager.DestroyWindows();
++    if (!IsHeadless()) {
++      CServiceBroker::GetRenderSystem().DestroyRenderSystem();
++      CServiceBroker::GetWinSystem().DestroyWindow();
++      CServiceBroker::GetWinSystem().DestroyWindowSystem();
++      g_windowManager.DestroyWindows();
++    }
+ 
+     CLog::Log(LOGNOTICE, "unload sections");
+ 
+@@ -4004,10 +4010,13 @@ bool CApplication::OnMessage(CGUIMessage& message)
  
        if (!m_appPlayer.IsPlayingVideo())
        {
