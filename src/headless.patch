@@ -68,7 +68,7 @@ index 580fdce..803b115 100644
 +  {
 +    m_headless = value;
 +  }
-+  
++
 +  bool IsHeadless() const
 +  {
 +    return m_headless;
@@ -125,4 +125,18 @@ index 6b1f2b6..e111490 100644
 +
    if(CAEFactory::SupportsQualitySetting())
      m_simpleConditions.insert("has_ae_quality_levels");
+
+diff --git a/xbmc/GUIInfoManager.cpp b/xbmc/GUIInfoManager.cpp
+index d683351e48..03bc3dd1d0 100644
+--- a/xbmc/GUIInfoManager.cpp
++++ b/xbmc/GUIInfoManager.cpp
+@@ -5615,6 +5615,8 @@ int CGUIInfoManager::TranslateSingleString(const std::string &strCondition, bool
+     }
+     else if (cat.name == "skin")
+     {
++      if (g_application.IsHeadless())
++         return 0;
+       for (size_t i = 0; i < sizeof(skin_labels) / sizeof(infomap); i++)
+       {
+         if (prop.name == skin_labels[i].str)
  
