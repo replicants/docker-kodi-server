@@ -29,7 +29,7 @@ RUN cd /root && \
     pacman --noprogressbar --noconfirm -S git make autoconf automake pkg-config jre8-openjdk-headless swig gcc python2 mesa-libgl glu libmariadbclient libass tinyxml yajl libxslt taglib libmicrohttpd libxrandr libssh smbclient libnfs ffmpeg libx264 cmake gperf unzip zip libcdio gtk-update-icon-cache rsync grep sed gettext which patch && \
 	ln -s /usr/bin/python2 /usr/bin/python && \
 	ln -s /usr/bin/python2-config /usr/bin/python-config && \
-	git clone https://github.com/xbmc/xbmc.git -b 18.0a1-Leia --depth=1 && \
+	git clone https://github.com/xbmc/xbmc.git -b 18.0a2-Leia --depth=1 && \
 	cd /root/xbmc && \
 	mv /headless.patch . && \
 	git apply headless.patch && \
@@ -60,7 +60,7 @@ RUN cd /root && \
 	cd /root && \
 	mkdir empty && \
 	rsync -a --delete empty/ xbmc/ && \
-    pacman --noconfirm -Rnsc git make autoconf automake pkg-config swig jre8-openjdk-headless gcc cmake gperf rsync gtk-update-icon-cache grep gettext which patch && \
+    pacman --noconfirm -Rnsc git make autoconf automake swig jre8-openjdk-headless gcc cmake gperf rsync gtk-update-icon-cache grep gettext which patch && \
     rm -rf /root/* /usr/lib/python2.7/test /usr/share/doc /usr/share/man /var/cache/pacman/pkg
 
 
