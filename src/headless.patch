@@ -1,14 +1,14 @@
-commit 7434923cdc4f29e44bd26f93a8034d370b02b95b
+commit 19312a22648590e5b90f79e0ba0f09e4451c1efe
 Author: Celedhrim <celed+gitlab@ielf.org>
-Date:   Mon Jun 25 16:05:27 2018 +0200
+Date:   Tue Aug 28 11:32:23 2018 +0200
 
     Headless patch
 
 diff --git a/xbmc/AppParamParser.cpp b/xbmc/AppParamParser.cpp
-index 3729d39..7f35b0f 100644
+index 8dd6dfc..8ace594 100644
 --- a/xbmc/AppParamParser.cpp
 +++ b/xbmc/AppParamParser.cpp
-@@ -100,6 +100,8 @@ void CAppParamParser::ParseArg(const std::string &arg)
+@@ -88,6 +88,8 @@ void CAppParamParser::ParseArg(const std::string &arg)
      m_testmode = true;
    else if (arg.substr(0, 11) == "--settings=")
      g_advancedSettings.AddSettingsFile(arg.substr(11));
@@ -18,18 +18,18 @@ index 3729d39..7f35b0f 100644
    {
      if (m_testmode)
 diff --git a/xbmc/Application.cpp b/xbmc/Application.cpp
-index 0f281bd..9766c1b 100644
+index f39a94e..eb21f9a 100644
 --- a/xbmc/Application.cpp
 +++ b/xbmc/Application.cpp
-@@ -258,6 +258,7 @@ CApplication::CApplication(void)
-   , m_lastRenderTime(0)
-   , m_skipGuiRender(false)
-   , m_bStandalone(false)
+@@ -233,6 +233,7 @@ CApplication::CApplication(void)
+   , m_pInertialScrollingHandler(new CInertialScrollingHandler())
+   , m_WaitingExternalCalls(0)
+   , m_playerEvent(true, true)
 +  , m_headless(false)
-   , m_bTestMode(false)
-   , m_bSystemScreenSaverEnable(false)
-   , m_muted(false)
-@@ -693,7 +694,8 @@ bool CApplication::CreateGUI()
+ {
+   TiXmlBase::SetCondenseWhiteSpace(false);
+ 
+@@ -665,7 +666,8 @@ bool CApplication::CreateGUI()
    m_pGUI->Init();
  
    // Splash requires gui component!!
@@ -39,16 +39,16 @@ index 0f281bd..9766c1b 100644
  
    // The key mappings may already have been loaded by a peripheral
    CLog::Log(LOGINFO, "load keymapping");
-@@ -1034,7 +1036,7 @@ bool CApplication::Initialize()
+@@ -1006,7 +1008,7 @@ bool CApplication::Initialize()
    int iDots = 1;
    while (!event.WaitMSec(1000))
    {
 -    if (databaseManager.IsUpgrading())
-+    if (databaseManager.IsUpgrading()  && !IsHeadless())
++    if (databaseManager.IsUpgrading()  && !IsHeadless() )
        CServiceBroker::GetRenderSystem()->ShowSplash(std::string(iDots, ' ') + localizedStr + std::string(iDots, '.'));
  
      if (iDots == 3)
-@@ -1042,7 +1044,8 @@ bool CApplication::Initialize()
+@@ -1014,7 +1016,8 @@ bool CApplication::Initialize()
      else
        ++iDots;
    }
@@ -58,7 +58,7 @@ index 0f281bd..9766c1b 100644
  
    StartServices();
  
-@@ -1073,14 +1076,15 @@ bool CApplication::Initialize()
+@@ -1045,14 +1048,15 @@ bool CApplication::Initialize()
      iDots = 1;
      while (!event.WaitMSec(1000))
      {
@@ -76,7 +76,7 @@ index 0f281bd..9766c1b 100644
      m_incompatibleAddons = incompatibleAddons;
      m_confirmSkinChange = true;
  
-@@ -1422,7 +1426,7 @@ bool CApplication::OnSettingsSaving() const
+@@ -1394,7 +1398,7 @@ bool CApplication::OnSettingsSaving() const
    // don't save settings when we're busy stopping the application
    // a lot of screens try to save settings on deinit and deinit is
    // called for every screen when the application is stopping
@@ -85,7 +85,7 @@ index 0f281bd..9766c1b 100644
      return false;
  
    return true;
-@@ -2454,7 +2458,7 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
+@@ -2424,7 +2428,7 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
      CWIN32Util::XBMCShellExecute(pMsg->strParam.c_str(), (pMsg->param1 == 1));
  #endif
      // Resume AE processing of XBMC native audio
@@ -94,7 +94,7 @@ index 0f281bd..9766c1b 100644
      {
        if (!audioengine->Resume())
        {
-@@ -2729,10 +2733,12 @@ bool CApplication::Cleanup()
+@@ -2699,10 +2703,12 @@ bool CApplication::Cleanup()
      m_globalScreensaverInhibitor.Release();
      m_screensaverInhibitor.Release();
  
@@ -111,7 +111,7 @@ index 0f281bd..9766c1b 100644
  
      CLog::Log(LOGNOTICE, "unload sections");
  
-@@ -3252,15 +3258,18 @@ void CApplication::PlaybackCleanup()
+@@ -3233,15 +3239,18 @@ void CApplication::PlaybackCleanup()
  
    if (!m_appPlayer.IsPlayingVideo())
    {
@@ -139,10 +139,10 @@ index 0f281bd..9766c1b 100644
  #ifdef TARGET_DARWIN_IOS
      CDarwinUtils::SetScheduling(false);
 diff --git a/xbmc/Application.h b/xbmc/Application.h
-index 57603ca..e113a9f 100644
+index 1faf9dd..0bb81dc 100644
 --- a/xbmc/Application.h
 +++ b/xbmc/Application.h
-@@ -329,6 +329,16 @@ public:
+@@ -322,6 +322,16 @@ public:
      return m_bStandalone;
    }
  
@@ -159,19 +159,19 @@ index 57603ca..e113a9f 100644
    void SetEnableTestMode(bool value)
    {
      m_bTestMode = value;
-@@ -464,6 +474,7 @@ protected:
-   bool m_skipGuiRender;
+@@ -458,6 +468,7 @@ protected:
+   bool m_skipGuiRender = false;
  
-   bool m_bStandalone;
-+  bool m_headless;
-   bool m_bTestMode;
-   bool m_bSystemScreenSaverEnable;
+   bool m_bStandalone = false;
++  bool m_headless = false;
+   bool m_bTestMode = false;
+   bool m_bSystemScreenSaverEnable = false;
  
 diff --git a/xbmc/guilib/GUIDialog.cpp b/xbmc/guilib/GUIDialog.cpp
-index 7120659..68aec93 100644
+index 986c6bf..f97ab84 100644
 --- a/xbmc/guilib/GUIDialog.cpp
 +++ b/xbmc/guilib/GUIDialog.cpp
-@@ -185,7 +185,7 @@ void CGUIDialog::Open_Internal(bool bProcessRenderLoop, const std::string &param
+@@ -173,7 +173,7 @@ void CGUIDialog::Open_Internal(bool bProcessRenderLoop, const std::string &param
    CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
  
    if (!CServiceBroker::GetGUI()->GetWindowManager().Initialized() ||
@@ -181,10 +181,10 @@ index 7120659..68aec93 100644
  
    // set running before it's added to the window manager, else the auto-show code
 diff --git a/xbmc/platform/xbmc.cpp b/xbmc/platform/xbmc.cpp
-index 08b1072..12ac7cb 100644
+index 9fa20ea..59b7638 100644
 --- a/xbmc/platform/xbmc.cpp
 +++ b/xbmc/platform/xbmc.cpp
-@@ -62,7 +62,7 @@ extern "C" int XBMC_Run(bool renderGUI, const CAppParamParser &params)
+@@ -50,7 +50,7 @@ extern "C" int XBMC_Run(bool renderGUI, const CAppParamParser &params)
    CXBMCApp::get()->Initialize();
  #endif
  
@@ -194,15 +194,15 @@ index 08b1072..12ac7cb 100644
      CMessagePrinter::DisplayError("ERROR: Unable to create GUI. Exiting");
      return status;
 diff --git a/xbmc/settings/SettingConditions.cpp b/xbmc/settings/SettingConditions.cpp
-index 9ff2437..d3b061a 100644
+index 9022aac..50e808a 100644
 --- a/xbmc/settings/SettingConditions.cpp
 +++ b/xbmc/settings/SettingConditions.cpp
-@@ -355,6 +355,9 @@ void CSettingConditions::Initialize(const CProfilesManager &profileManager)
+@@ -343,6 +343,9 @@ void CSettingConditions::Initialize(const CProfilesManager &profileManager)
      m_simpleConditions.insert("isstandalone");
  #endif
  
-+if (g_application.IsHeadless())
-+  m_simpleConditions.insert("is_headless");
++  if (g_application.IsHeadless())
++    m_simpleConditions.insert("is_headless");
 +
    m_simpleConditions.insert("has_ae_quality_levels");
  
