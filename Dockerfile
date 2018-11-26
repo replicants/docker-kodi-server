@@ -42,7 +42,7 @@ RUN cd /root && \
     cd /root && \
     rm -rf /build && \
     userdel builder && \
-	git clone https://github.com/xbmc/xbmc.git -b 18.0b3-Leia --depth=1 && \
+	git clone https://github.com/xbmc/xbmc.git -b 18.0rc1-Leia --depth=1 && \
     cd /root/xbmc && \
 	mv /headless.patch . && \
 	git apply headless.patch && \

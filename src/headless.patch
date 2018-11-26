@@ -1,209 +1,142 @@
-commit 19312a22648590e5b90f79e0ba0f09e4451c1efe
-Author: Celedhrim <celed+gitlab@ielf.org>
-Date:   Tue Aug 28 11:32:23 2018 +0200
+commit 34a576e9e956006905535f6c275eb47d2949c5c2
+Author: Celedhrim <celed+git@ielf.org>
+Date:   Sat Nov 24 16:10:05 2018 +0100
 
-    Headless patch
+    headless patch (18.0rc1)
 
-diff --git a/xbmc/AppParamParser.cpp b/xbmc/AppParamParser.cpp
-index 8dd6dfc..8ace594 100644
---- a/xbmc/AppParamParser.cpp
-+++ b/xbmc/AppParamParser.cpp
-@@ -88,6 +88,8 @@ void CAppParamParser::ParseArg(const std::string &arg)
-     m_testmode = true;
-   else if (arg.substr(0, 11) == "--settings=")
-     g_advancedSettings.AddSettingsFile(arg.substr(11));
-+  else if (arg == "--headless")
-+    g_application.SetHeadless(true);
-   else if (arg.length() != 0 && arg[0] != '-')
-   {
-     if (m_testmode)
 diff --git a/xbmc/Application.cpp b/xbmc/Application.cpp
-index f39a94e..eb21f9a 100644
+index 715c4e6..5d1c9e6 100644
 --- a/xbmc/Application.cpp
 +++ b/xbmc/Application.cpp
-@@ -233,6 +233,7 @@ CApplication::CApplication(void)
-   , m_pInertialScrollingHandler(new CInertialScrollingHandler())
-   , m_WaitingExternalCalls(0)
-   , m_playerEvent(true, true)
-+  , m_headless(false)
- {
-   TiXmlBase::SetCondenseWhiteSpace(false);
- 
-@@ -665,7 +666,8 @@ bool CApplication::CreateGUI()
+@@ -660,9 +660,6 @@ bool CApplication::CreateGUI()
+   m_pGUI.reset(new CGUIComponent());
    m_pGUI->Init();
  
-   // Splash requires gui component!!
+-  // Splash requires gui component!!
 -  CServiceBroker::GetRenderSystem()->ShowSplash("");
-+  if (!IsHeadless())
-+    CServiceBroker::GetRenderSystem()->ShowSplash("");
- 
+-
    // The key mappings may already have been loaded by a peripheral
    CLog::Log(LOGINFO, "load keymapping");
-@@ -1006,7 +1008,7 @@ bool CApplication::Initialize()
+   if (!CServiceBroker::GetInputManager().LoadKeymaps())
+@@ -733,8 +730,6 @@ bool CApplication::Initialize()
    int iDots = 1;
    while (!event.WaitMSec(1000))
    {
 -    if (databaseManager.IsUpgrading())
-+    if (databaseManager.IsUpgrading()  && !IsHeadless() )
-       CServiceBroker::GetRenderSystem()->ShowSplash(std::string(iDots, ' ') + localizedStr + std::string(iDots, '.'));
+-      CServiceBroker::GetRenderSystem()->ShowSplash(std::string(iDots, ' ') + localizedStr + std::string(iDots, '.'));
  
      if (iDots == 3)
-@@ -1014,7 +1016,8 @@ bool CApplication::Initialize()
-     else
-       ++iDots;
-   }
--  CServiceBroker::GetRenderSystem()->ShowSplash("");
-+  if (!IsHeadless())
-+    CServiceBroker::GetRenderSystem()->ShowSplash("");
- 
-   StartServices();
- 
-@@ -1045,14 +1048,15 @@ bool CApplication::Initialize()
+       iDots = 1;
+@@ -773,14 +768,11 @@ bool CApplication::Initialize()
      iDots = 1;
      while (!event.WaitMSec(1000))
      {
 -      if (isMigratingAddons)
-+      if (isMigratingAddons && !IsHeadless())
-         CServiceBroker::GetRenderSystem()->ShowSplash(std::string(iDots, ' ') + localizedStr + std::string(iDots, '.'));
+-        CServiceBroker::GetRenderSystem()->ShowSplash(std::string(iDots, ' ') + localizedStr + std::string(iDots, '.'));
        if (iDots == 3)
          iDots = 1;
        else
          ++iDots;
      }
 -    CServiceBroker::GetRenderSystem()->ShowSplash("");
-+    if (!IsHeadless())
-+      CServiceBroker::GetRenderSystem()->ShowSplash("");
      m_incompatibleAddons = incompatibleAddons;
      m_confirmSkinChange = true;
  
-@@ -1394,7 +1398,7 @@ bool CApplication::OnSettingsSaving() const
+@@ -1122,10 +1114,9 @@ bool CApplication::OnSettingsSaving() const
    // don't save settings when we're busy stopping the application
    // a lot of screens try to save settings on deinit and deinit is
    // called for every screen when the application is stopping
 -  if (m_bStop)
-+  if (m_bStop || IsHeadless())
-     return false;
+-    return false;
  
-   return true;
-@@ -2424,7 +2428,7 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
+-  return true;
++  return false;
++
+ }
+ 
+ void CApplication::ReloadSkin(bool confirm/*=false*/)
+@@ -2153,14 +2144,6 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
+ #elif defined(TARGET_WINDOWS)
      CWIN32Util::XBMCShellExecute(pMsg->strParam.c_str(), (pMsg->param1 == 1));
  #endif
-     // Resume AE processing of XBMC native audio
+-    // Resume AE processing of XBMC native audio
 -    if (audioengine)
-+    if (!IsHeadless() && audioengine)
-     {
-       if (!audioengine->Resume())
-       {
-@@ -2699,10 +2703,12 @@ bool CApplication::Cleanup()
-     m_globalScreensaverInhibitor.Release();
+-    {
+-      if (!audioengine->Resume())
+-      {
+-        CLog::Log(LOGFATAL, "%s: Failed to restart AudioEngine after return from external player", __FUNCTION__);
+-      }
+-    }
+     break;
+ 
+   case TMSG_EXECUTE_SCRIPT:
+@@ -2430,15 +2413,8 @@ bool CApplication::Cleanup()
      m_screensaverInhibitor.Release();
  
--    CServiceBroker::GetRenderSystem()->DestroyRenderSystem();
--    CServiceBroker::GetWinSystem()->DestroyWindow();
--    CServiceBroker::GetWinSystem()->DestroyWindowSystem();
--    CServiceBroker::GetGUI()->GetWindowManager().DestroyWindows();
-+    if (!IsHeadless()) {
-+      CServiceBroker::GetRenderSystem()->DestroyRenderSystem();
-+      CServiceBroker::GetWinSystem()->DestroyWindow();
-+      CServiceBroker::GetWinSystem()->DestroyWindowSystem();
-+      CServiceBroker::GetGUI()->GetWindowManager().DestroyWindows();
-+    }
+     CRenderSystemBase *renderSystem = CServiceBroker::GetRenderSystem();
+-    if (renderSystem)
+-      renderSystem->DestroyRenderSystem();
+ 
+     CWinSystemBase *winSystem = CServiceBroker::GetWinSystem();
+-    if (winSystem)
+-      winSystem->DestroyWindow();
+-
+-    if (m_pGUI)
+-      m_pGUI->GetWindowManager().DestroyWindows();
  
      CLog::Log(LOGNOTICE, "unload sections");
  
-@@ -3233,15 +3239,18 @@ void CApplication::PlaybackCleanup()
+@@ -2977,22 +2953,10 @@ void CApplication::PlaybackCleanup()
+     m_appPlayer.OpenNext(m_ServiceManager->GetPlayerCoreFactory());
+   }
  
-   if (!m_appPlayer.IsPlayingVideo())
-   {
+-  if (!m_appPlayer.IsPlayingVideo())
+-  {
 -    if(CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_FULLSCREEN_VIDEO ||
 -       CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_FULLSCREEN_GAME)
-+    if (!IsHeadless())
-     {
+-    {
 -      CServiceBroker::GetGUI()->GetWindowManager().PreviousWindow();
 -    }
 -    else
 -    {
 -      //  resets to res_desktop or look&feel resolution (including refreshrate)
 -      CServiceBroker::GetWinSystem()->GetGfxContext().SetFullScreenVideo(false);
-+      if(CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_FULLSCREEN_VIDEO ||
-+        CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_FULLSCREEN_GAME)
-+      {
-+        CServiceBroker::GetGUI()->GetWindowManager().PreviousWindow();
-+      }
-+      else
-+      {
-+        //  resets to res_desktop or look&feel resolution (including refreshrate)
-+        CServiceBroker::GetWinSystem()->GetGfxContext().SetFullScreenVideo(false);
-+      }
-     }
+-    }
  #ifdef TARGET_DARWIN_IOS
      CDarwinUtils::SetScheduling(false);
+ #endif
+-  }
++
+ 
+   if (!m_appPlayer.IsPlayingAudio() && CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() == PLAYLIST_NONE && CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_VISUALISATION)
+   {
 diff --git a/xbmc/Application.h b/xbmc/Application.h
-index 1faf9dd..0bb81dc 100644
+index 30cf6e7..9caa821 100644
 --- a/xbmc/Application.h
 +++ b/xbmc/Application.h
-@@ -322,6 +322,16 @@ public:
-     return m_bStandalone;
-   }
+@@ -309,6 +309,7 @@ public:
  
-+  void SetHeadless(bool value)
-+  {
-+    m_headless = value;
-+  }
+   bool PlatformDirectoriesEnabled() { return m_bPlatformDirectories; }
+   bool IsStandAlone() { return m_bStandalone; }
 +
-+  bool IsHeadless() const
-+  {
-+    return m_headless;
-+  }
-+
-   void SetEnableTestMode(bool value)
-   {
-     m_bTestMode = value;
-@@ -458,6 +468,7 @@ protected:
-   bool m_skipGuiRender = false;
+   bool IsEnableTestMode() { return m_bTestMode; }
  
-   bool m_bStandalone = false;
-+  bool m_headless = false;
-   bool m_bTestMode = false;
-   bool m_bSystemScreenSaverEnable = false;
- 
-diff --git a/xbmc/guilib/GUIDialog.cpp b/xbmc/guilib/GUIDialog.cpp
-index 986c6bf..f97ab84 100644
---- a/xbmc/guilib/GUIDialog.cpp
-+++ b/xbmc/guilib/GUIDialog.cpp
-@@ -173,7 +173,7 @@ void CGUIDialog::Open_Internal(bool bProcessRenderLoop, const std::string &param
-   CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
- 
-   if (!CServiceBroker::GetGUI()->GetWindowManager().Initialized() ||
--      (m_active && !m_closing && !IsAnimating(ANIM_TYPE_WINDOW_CLOSE)))
-+      (m_active && !m_closing && !IsAnimating(ANIM_TYPE_WINDOW_CLOSE))|| g_application.IsHeadless())
-     return;
- 
-   // set running before it's added to the window manager, else the auto-show code
+   bool IsAppFocused() const { return m_AppFocused; }
 diff --git a/xbmc/platform/xbmc.cpp b/xbmc/platform/xbmc.cpp
-index 9fa20ea..59b7638 100644
+index e9f3917..9021c16 100644
 --- a/xbmc/platform/xbmc.cpp
 +++ b/xbmc/platform/xbmc.cpp
-@@ -50,7 +50,7 @@ extern "C" int XBMC_Run(bool renderGUI, const CAppParamParser &params)
+@@ -44,13 +44,6 @@ extern "C" int XBMC_Run(bool renderGUI, const CAppParamParser &params)
    CXBMCApp::get()->Initialize();
  #endif
  
 -  if (renderGUI && !g_application.CreateGUI())
-+  if (renderGUI && !g_application.IsHeadless() && !g_application.CreateGUI())
+-  {
+-    CMessagePrinter::DisplayError("ERROR: Unable to create GUI. Exiting");
+-    g_application.Stop(EXITCODE_QUIT);
+-    g_application.Cleanup();
+-    return status;
+-  }
+   if (!g_application.Initialize())
    {
-     CMessagePrinter::DisplayError("ERROR: Unable to create GUI. Exiting");
-     return status;
-diff --git a/xbmc/settings/SettingConditions.cpp b/xbmc/settings/SettingConditions.cpp
-index 9022aac..50e808a 100644
---- a/xbmc/settings/SettingConditions.cpp
-+++ b/xbmc/settings/SettingConditions.cpp
-@@ -343,6 +343,9 @@ void CSettingConditions::Initialize(const CProfilesManager &profileManager)
-     m_simpleConditions.insert("isstandalone");
- #endif
- 
-+  if (g_application.IsHeadless())
-+    m_simpleConditions.insert("is_headless");
-+
-   m_simpleConditions.insert("has_ae_quality_levels");
- 
- #ifdef HAS_WEB_SERVER
+     CMessagePrinter::DisplayError("ERROR: Unable to Initialize. Exiting");
