@@ -1,101 +1,57 @@
 # docker-kodi-server
 #
-# Setup: Clone repo then checkout appropriate version
-#   For jarvis
-#     $ git checkout jarvis
-#   For Master (Lastest Kodi stable release)
-#     $ git checkout master
-#
 # Create your own Build:
 # 	$ docker build --rm=true -t $(whoami)/kodi-server .
 #
 # Run your build:
 #	  $ docker run -d --restart="always" --net=host -v /directory/with/kodidata:/opt/kodi-server/share/kodi/portable_data $(whoami)/kodi-server
 #
-#
 # Greatly inspire by the work of wernerb,
 # See https://github.com/wernerb/docker-xbmc-server
 
-from base/archlinux
+FROM celedhrim/kodi-server-base-build:leia
 maintainer celedhrim "celed+git@ielf.org"
 
-# Add headless patch
-ADD src/headless.patch /headless.patch
+# Clone kodi 
+RUN cd / && git clone https://github.com/xbmc/xbmc.git -b 18.0rc1-Leia --depth=1
 
-# Install dep , compile , clean
+# Define workdir
+WORKDIR /xbmc
 
-RUN curl -o /etc/pacman.d/mirrorlist "https://www.archlinux.org/mirrorlist/?country=all&protocol=https&ip_version=6&use_mirror_status=on" && \
-    sed -i 's/^#//' /etc/pacman.d/mirrorlist && \
-    cd /root && \
-	pacman-key --populate && \
-    pacman-key --refresh-keys && \
-    pacman -Sy --noprogressbar --noconfirm && \
-    pacman -S --force openssl --noconfirm && \
-    pacman -S pacman --noprogressbar --noconfirm && \
-    pacman-db-upgrade && \
-    pacman -Syy --noprogressbar --noconfirm archlinux-keyring && \
-    pacman -Su --noprogressbar --noconfirm && \
-    pacman --noprogressbar --noconfirm -S git make autoconf automake pkg-config swig jre8-openjdk-headless gcc python2 mesa-libgl glu libmariadbclient libass tinyxml libcrossguid yajl libxslt taglib libmicrohttpd libxrandr libssh smbclient libnfs ffmpeg libx264 cmake gperf unzip zip libcdio gtk-update-icon-cache rsync && \
-	ln -s /usr/bin/python2 /usr/bin/python && \
-	ln -s /usr/bin/python2-config /usr/bin/python-config && \
-	git clone https://github.com/xbmc/xbmc.git -b 17.0-Krypton --depth=1 && \
-	cd /root/xbmc && \
-	make -C tools/depends/native/JsonSchemaBuilder/ && \
-	cp tools/depends/native/JsonSchemaBuilder/bin/JsonSchemaBuilder /usr/local/bin && \
-	chmod 775 /usr/local/bin/JsonSchemaBuilder && \
-	mv /headless.patch . && \
-	git apply headless.patch && \
-	./bootstrap && \
-	./configure \
-		--enable-nfs \
-		--enable-upnp \
-		--enable-ssh \
-        --with-ffmpeg=shared \
-		--disable-libbluray \
-		--disable-debug \
-		--disable-vdpau \
-		--disable-vaapi \
-		--disable-crystalhd \
-		--disable-vdadecoder \
-		--disable-vtbdecoder \
-		--disable-openmax \
-		--disable-joystick \
-		--disable-rsxs \
-		--disable-projectm \
-		--disable-rtmp \
-		--disable-airplay \
-		--disable-airtunes \
-		--disable-dvdcss \
-		--disable-optical-drive \
-		--disable-libusb \
-		--disable-libcec \
-		--disable-libmp3lame \
-		--disable-libcap \
-		--disable-udev \
-		--disable-libvorbisenc \
-		--disable-asap-codec \
-		--disable-afpclient \
-		--disable-goom \
-		--disable-fishbmc \
-		--disable-spectrum \
-		--disable-waveform \
-		--disable-avahi \
-		--disable-texturepacker \
-		--disable-pulse \
-		--disable-dbus \
-		--disable-alsa \
-		--disable-hal \
-		--prefix=/opt/kodi-server && \
-	make && \
-	make install && \
-	mkdir -p /opt/kodi-server/share/kodi/portable_data/ && \
-	cd /root && \
-	mkdir empty && \
-	rsync -a --delete empty/ xbmc/ && \
-    pacman --noconfirm -Rnsc git make autoconf automake pkg-config swig jre8-openjdk-headless gcc cmake gperf rsync gtk-update-icon-cache && \
-    rm -rf /root/* /usr/lib/python2.7/test /usr/share/doc /usr/share/man /var/cache/pacman/pkg
+# Get patch en apply 
+ADD src/headless.patch /xbmc/headless.patch
+RUN git apply headless.patch
 
+RUN cmake \
+		-DCMAKE_INSTALL_PREFIX=/opt/kodi-server \
+        -DENABLE_INTERNAL_FFMPEG=OFF \
+        -DWITH_FFMPEG=ON \
+        -DENABLE_AIRTUNES=OFF \
+        -DENABLE_EVENTCLIENTS=OFF \
+        -DENABLE_INTERNAL_CROSSGUID=ON \
+        -DENABLE_INTERNAL_RapidJSON=OFF \
+        -DENABLE_INTERNAL_FMT=OFF \
+        -DENABLE_INTERNAL_FSTRCMP=ON \
+        -DENABLE_INTERNAL_FLATBUFFERS=OFF \
+        -DENABLE_DVDCSS=OFF \
+        -DENABLE_ALSA=OFF \
+        -DENABLE_AVAHI=OFF \
+        -DENABLE_VDPAU=OFF \
+        -DENABLE_VAAPI=OFF \
+        -DENABLE_UDEV=OFF \
+        -DENABLE_PULSEAUDIO=OFF \
+        -DENABLE_OPTICAL=OFF \
+        -DENABLE_SNDIO=OFF \
+        -DENABLE_LCMS2=OFF \
+        -DENABLE_DBUS=OFF \
+        -DENABLE_BLURAY=OFF \
+        -DENABLE_CAP=OFF
 
-#Eventserver and webserver respectively.
+RUN make install
+
+FROM celedhrim/kodi-server-base-run:leia
+WORKDIR /opt/
+COPY --from=0 /opt .
+RUN mkdir -p /opt/kodi-server/share/kodi/portable_data/
 EXPOSE 9777/udp 8089/tcp
-CMD ["/opt/kodi-server/lib/kodi/kodi.bin","--headless","--no-test","--nolirc","-p"]
+CMD ["/opt/kodi-server/lib64/kodi/kodi-x11","--no-test","--nolirc","-p"]
