@@ -37,15 +37,15 @@ Because 8080 is default for http proxy , the docker image expose 8089
         $ docker pull celedhrim/kodi-server:branchname
 
 
-  | branchname           | Kodi branch | Kodi version | Ubuntu version      |
-  |----------------------|-------------|--------------|---------------------|
-  | `lastest` ( default) | krypton     | 17.0         | Archlinux           |
-  | `helix`              | helix       | 14.2         | 14.04 (Trusty Tahr) |
-  | `isengard`           | isengard    | 15.2         | 14.04 (Trusty Tahr) |
-  | `jarvis`             | jarvis      | 16.1         | 16.04 (Xenial Xerus)|
-  | `krypton`            | krypton     | 17.0         | Archlinux           |
-  | `leia`               | leia        | 18.0rc1      | Archlinux           |
-  | `experimental`       | krypton     | 18.0rc1      | Archlinux           |
+  | branchname           | Kodi branch | Kodi version | Ubuntu version       |
+  |----------------------|-------------|--------------|----------------------|
+  | `lastest` ( default) | krypton     | 17.0         | Archlinux            |
+  | `helix`              | helix       | 14.2         | 14.04 (Trusty Tahr)  |
+  | `isengard`           | isengard    | 15.2         | 14.04 (Trusty Tahr)  |
+  | `jarvis`             | jarvis      | 16.1         | 16.04 (Xenial Xerus) |
+  | `krypton`            | krypton     | 17.0         | Archlinux            |
+  | `leia`               | leia        | 18.0rc1      | Archlinux            |
+  | `experimental`       | krypton     | 17.6         | 18.04 (Bionic Beaver)|
 
 3. Run the image ( change the **/path/to/kodi-server-profile**)
 
