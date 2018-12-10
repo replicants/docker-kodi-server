@@ -1,5 +1,9 @@
 # docker-kodi-server
 
+**!!! WARNING !!!***
+Start with leia branch, portable data are now in `/usr/share/kodi/portable_data`
+Update your launch command 
+
 This will allow you to
 * serve files through the XBMC UPnP Library to your UPnP client/players (such as Xbmc or Chromecast).
 * Web access every time , or use with some tools like [htpc-manager](http://htpc.io/)
@@ -37,23 +41,23 @@ Because 8080 is default for http proxy , the docker image expose 8089
         $ docker pull celedhrim/kodi-server:branchname
 
 
-  | branchname           | Kodi branch | Kodi version | Ubuntu version      |
-  |----------------------|-------------|--------------|---------------------|
-  | `lastest` ( default) | krypton     | 17.6         | Archlinux           |
-  | `helix`              | helix       | 14.2         | 14.04 (Trusty Tahr) |
-  | `isengard`           | isengard    | 15.2         | 14.04 (Trusty Tahr) |
-  | `jarvis`             | jarvis      | 16.1         | 16.04 (Xenial Xerus)|
-  | `krypton`            | krypton     | 17.6         | Archlinux           |
-  | `Leia`               | leia        | 18.0rc2      | Archlinux           |
-  | `experimental`       | krypton     | 17.0rc2      | Archlinux           |
+  | branchname           | Kodi branch | Kodi version | Ubuntu version       |
+  |----------------------|-------------|--------------|----------------------|
+  | `lastest` ( default) | krypton     | 17.6         | Archlinux            |
+  | `helix`              | helix       | 14.2         | 14.04 (Trusty Tahr)  |
+  | `isengard`           | isengard    | 15.2         | 14.04 (Trusty Tahr)  |
+  | `jarvis`             | jarvis      | 16.1         | 16.04 (Xenial Xerus) |
+  | `krypton`            | krypton     | 17.6         | Archlinux            |
+  | `Leia`               | leia        | 18.0rc2      | 18.04 (Bionic Beaver)|
+  | `experimental`       | krypton     | 17.0rc2      | 18.04 (Bionic Beaver)|
 
 3. Run the image ( change the **/path/to/kodi-server-profile**)
 
-        $ docker run -d --restart="always" --net=host -v /path/to/kodi-server-profile:/opt/kodi-server/share/kodi/portable_data celedhrim/kodi-server
+        $ docker run -d --restart="always" --net=host -v /path/to/kodi-server-profile:/usr/share/kodi/portable_data celedhrim/kodi-server
 
    or if use specific branch
 
-        $ docker run -d --restart="always" --net=host -v /path/to/kodi-server-profile:/opt/kodi-server/share/kodi/portable_data celedhrim/kodi-server:branchname
+        $ docker run -d --restart="always" --net=host -v /path/to/kodi-server-profile:/usr/share/kodi/portable_data celedhrim/kodi-server:branchname
 
 
 
