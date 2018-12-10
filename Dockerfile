@@ -28,4 +28,4 @@ RUN apt-get update && \
 
 
 EXPOSE 9777/udp 8089/tcp
-#ENTRYPOINT ["/bin/xvfb-run-wrapper.sh"]
+ENTRYPOINT ["/bin/xvfb-run-wrapper.sh"]
