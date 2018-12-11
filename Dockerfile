@@ -15,17 +15,17 @@ maintainer celedhrim "celed+git@ielf.org"
 # Set Terminal to non interactive
 ENV DEBIAN_FRONTEND noninteractive
 
-ADD src/xvfb-run-wrapper.sh /bin/xvfb-run-wrapper.sh
+ADD src/kodi-run-wrapper.sh /bin/kodi-run-wrapper.sh
 
 RUN apt-get update && \
-    apt-get install -y xvfb software-properties-common && \
+    apt-get install -y xpra software-properties-common && \
     add-apt-repository -y ppa:team-xbmc/unstable && \
     apt-get install -y kodi=2:18.0+git20181203.1750-rc2-0bionic && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists /usr/share/man /usr/share/doc && \
-    chmod +x /bin/xvfb-run-wrapper.sh
+    chmod +x /bin/kodi-run-wrapper.sh
 
 
 
 EXPOSE 9777/udp 8089/tcp
-ENTRYPOINT ["/bin/xvfb-run-wrapper.sh"]
+ENTRYPOINT ["/bin/kodi-run-wrapper.sh"]
