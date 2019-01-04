@@ -20,7 +20,7 @@ ADD src/kodi-run-wrapper.sh /bin/kodi-run-wrapper.sh
 RUN apt-get update && \
     apt-get install -y pulseaudio xpra software-properties-common && \
     add-apt-repository -y ppa:team-xbmc/unstable && \
-    apt-get install -y kodi=2:18.0+git20181216.2113-rc3-0bionic && \
+    apt-get install -y kodi=2:18.0+git20181229.1531-rc4-0bionic && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists /usr/share/man /usr/share/doc && \
     chmod +x /bin/kodi-run-wrapper.sh && \
