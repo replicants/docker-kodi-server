@@ -1,16 +1,18 @@
 # docker-kodi-server
 
-**!!! WARNING !!!***
+*** !!! WARNING !!!***
 
 Start with leia branch, portable data are now in `/usr/share/kodi/portable_data`
 Update your launch command 
+
+*** WARNING END ***
 
 This will allow you to
 * serve files through the XBMC UPnP Library to your UPnP client/players (such as Xbmc or Chromecast).
 * Web access every time , or use with some tools like [htpc-manager](http://htpc.io/)
 * Trigger library scan When you want or from sickbeard/sickrage/couchpotato/...
 
-Docker is used to compile and run the latest headless version of KODI on Archlinux
+Docker is used to run the latest headless version of KODI on Ubuntu
 
 
 
@@ -49,7 +51,7 @@ Because 8080 is default for http proxy , the docker image expose 8089
   | `isengard`           | isengard    | 15.2         | 14.04 (Trusty Tahr)  |
   | `jarvis`             | jarvis      | 16.1         | 16.04 (Xenial Xerus) |
   | `krypton`            | krypton     | 17.6         | Archlinux            |
-  | `leia`               | leia        | 18.0rc4      | 18.04 (Bionic Beaver)|
+  | `leia`               | leia        | 18.0rc5      | 18.04 (Bionic Beaver)|
   | `experimental`       | krypton     | 17.0rc2      | 18.04 (Bionic Beaver)|
 
 3. Run the image ( change the **/path/to/kodi-server-profile**)
