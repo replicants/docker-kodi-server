@@ -20,7 +20,7 @@ ADD src/kodi-run-wrapper.sh /bin/kodi-run-wrapper.sh
 RUN apt-get update && \
     apt-get install -y pulseaudio xpra software-properties-common && \
     add-apt-repository -y ppa:team-xbmc/ppa && \
-    apt-get install -y kodi=2:18.4* && \
+    apt-get install -y kodi=2:18.5* && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists /usr/share/man /usr/share/doc && \
     chmod +x /bin/kodi-run-wrapper.sh && \
@@ -28,5 +28,5 @@ RUN apt-get update && \
 
 
 
-EXPOSE 9777/udp 8089/tcp
+EXPOSE 9777/udp 8089/tcp 9090/tcp
 ENTRYPOINT ["/bin/kodi-run-wrapper.sh"]
