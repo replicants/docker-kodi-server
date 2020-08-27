@@ -1,4 +1,6 @@
-# docker-kodi-server
+# docker-kodi-server NIGHTLY
+
+Updated Repo to allow Matrix (19-alpha) to be pulled instead of stable
 
 *** !!! WARNING !!! ***
 
